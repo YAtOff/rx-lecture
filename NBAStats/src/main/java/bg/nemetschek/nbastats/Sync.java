@@ -7,8 +7,8 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import java.util.Comparator;
 import java.util.List;
 
@@ -21,20 +21,21 @@ public class Sync {
 
         Client client = ClientBuilder.newClient()
                 .register(JacksonJsonProvider.class);
+        WebTarget target = client.target("http://localhost:8080");
 
-        List<Team> teams = client.target("http://localhost:8080")
+        long startTime = System.currentTimeMillis();
+        List<Team> teams = target
                 .path("teams")
-                .request(MediaType.APPLICATION_JSON)
+                .request()
                 .get(new GenericType<List<Team>>() {});
         for (Team team : teams) {
-            List<Player> players = client.target("http://localhost:8080")
+            List<Player> players = target
                 .path(String.format("teams/%s/players", team.getCode()))
-                .request(MediaType.APPLICATION_JSON)
+                .request()
                 .get(new GenericType<List<Player>>() {});
-            for (Player player : players) {
-                bestShooters.tryAdd(player);
-            }
+            players.forEach(bestShooters::tryAdd);
         }
+        System.out.println(String.format("Time: %d", System.currentTimeMillis() - startTime));
 
         for (Player player : bestShooters) {
             System.out.println(String.format("%s %s %2.1f", player.getName(), player.getTeam(), player.getStats().getPoints()));

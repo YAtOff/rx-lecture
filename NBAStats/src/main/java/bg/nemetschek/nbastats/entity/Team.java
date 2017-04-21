@@ -31,6 +31,6 @@ public class Team {
 
     @Override
     public String toString() {
-        return String.format("Tema(%s, %s, %s)", getCode(), getName(), getCity());
+        return String.format("Team(%s, %s, %s)", getCode(), getName(), getCity());
     }
 }

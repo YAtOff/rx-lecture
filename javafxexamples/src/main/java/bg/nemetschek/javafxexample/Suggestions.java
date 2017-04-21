@@ -1,23 +1,26 @@
 package bg.nemetschek.javafxexample;
 
+import com.sun.deploy.util.StringUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.observables.JavaFxObservable;
 import rx.schedulers.JavaFxScheduler;
+import rx.schedulers.Schedulers;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public final class Search  extends Application {
+public final class Suggestions extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -27,33 +30,30 @@ public final class Search  extends Application {
         //Declare a ListView with all U.S. states
         ListView<String> listView = new ListView<>();
         List<String> states = Arrays.asList(getResponse("https://goo.gl/S0xuOi").split("\\r?\\n"));
-        listView.getItems().setAll(states);
 
-        //broadcast typed keys
-        Observable<String> typedKeys = JavaFxObservable.eventsOf(listView, KeyEvent.KEY_TYPED)
-                .map(KeyEvent::getCharacter)
-                .publish().refCount();
+        TextField inputBox = new TextField();
+
+        Function<String, Observable<List<String>>> getStates = (String search) -> Observable.just(
+            states.stream().filter(st -> st.toUpperCase().startsWith(search.toUpperCase())).collect(Collectors.toList())
+        )
+            .delay(500, TimeUnit.MILLISECONDS, Schedulers.io());
+
+        Observable<String> typedWords = JavaFxObservable.valuesOf(inputBox.textProperty())
+            .publish().refCount();
 
         //immediately jump to state being typed
-        typedKeys
-            .debounce(1000, TimeUnit.MILLISECONDS).startWith("")
-            .doOnNext(c -> System.out.println("debounced: " + c))
+        typedWords.debounce(1000, TimeUnit.MILLISECONDS).startWith("")
             .switchMap(s ->
-                typedKeys
-                    .scan((x,y) -> x + y)
-                    .doOnNext(c -> System.out.println("words: " + c))
+                typedWords
+                    .filter(w -> w.length() > 2)
                     .switchMap(input ->
-                        Observable.from(states)
-                            .doOnNext(c -> System.out.println("state check for: " + input))
-                            .filter(st -> st.toUpperCase().startsWith(input.toUpperCase()))
-                            .take(1)
-                        )
+                        getStates.apply(input)
+                        .observeOn(JavaFxScheduler.getInstance())
+                    )
             ).observeOn(JavaFxScheduler.getInstance())
-            .subscribe(st ->
-                listView.getSelectionModel().select(st)
-            );
+            .subscribe(matching -> listView.getItems().setAll(matching));
 
-        root.getChildren().add(listView);
+        root.getChildren().addAll(inputBox, listView);
 
         stage.setScene(new Scene(root));
 

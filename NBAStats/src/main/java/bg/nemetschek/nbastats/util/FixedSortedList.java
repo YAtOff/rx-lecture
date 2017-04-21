@@ -19,7 +19,7 @@ public class FixedSortedList <E> extends AbstractList<E> {
         this.internalList = new ArrayList<>(maxSize);
     }
 
-    public void tryAdd(E e) {
+    public synchronized void tryAdd(E e) {
         if (size() < maxSize) {
             internalList.add(e);
         } else if (comparator.compare(internalList.get(maxSize - 1), e) == -1) {
