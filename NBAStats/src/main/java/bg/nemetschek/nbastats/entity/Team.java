@@ -1,9 +1,12 @@
 package bg.nemetschek.nbastats.entity;
 
+import java.util.List;
+
 public class Team {
     private String code;
     private String name;
     private String city;
+    private List<String> players;
 
     public String getCode() {
         return code;
@@ -27,6 +30,14 @@ public class Team {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<String> players) {
+        this.players = players;
     }
 
     @Override
