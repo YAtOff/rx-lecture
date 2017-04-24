@@ -1,10 +1,10 @@
 package bg.nemetschek.error;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Push {
-    List<Runnable> tasks = new ArrayList<>();
+    Queue<Runnable> tasks = new LinkedList<>();
 
     public static void main(String[] args) {
         Push p = new Push();
@@ -23,12 +23,7 @@ public class Push {
     }
 
     void step1() {
-        try {
-            Thread.currentThread().sleep(100);
-            step2();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        schedule(this::step2);
     }
 
     void step2() {
@@ -40,13 +35,14 @@ public class Push {
     }
 
     void runTasks() {
-        tasks.forEach(task -> {
+        while (!tasks.isEmpty()) {
+            Runnable task = tasks.remove();
             try {
-                new Thread(task).start();
+                task.run();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 }
 

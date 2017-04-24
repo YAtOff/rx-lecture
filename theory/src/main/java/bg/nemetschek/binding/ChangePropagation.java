@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public final class DataBindingExample extends Application {
+public final class ChangePropagation extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
