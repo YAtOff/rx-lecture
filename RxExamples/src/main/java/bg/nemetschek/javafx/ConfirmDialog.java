@@ -16,6 +16,7 @@ public final class ConfirmDialog extends Application {
     public void start(Stage stage) throws Exception {
 
         Button runButton = new Button("Run Process");
+        runButton.setMinSize(200, 100);
 
         JavaFxObservable.actionEventsOf(runButton)
             .flatMap(ae ->

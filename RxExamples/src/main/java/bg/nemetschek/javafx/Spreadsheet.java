@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.observables.JavaFxObservable;
@@ -21,9 +22,17 @@ public final class Spreadsheet extends Application {
         VBox root = new VBox();
 
         TextField input1 = new TextField();
+        input1.setFont(new Font("Arial", 25));
+        input1.setMinSize(200, 100);
         TextField input2 = new TextField();
+        input2.setFont(new Font("Arial", 25));
+        input2.setMinSize(200, 100);
         TextField operator = new TextField();
+        operator.setFont(new Font("Arial", 25));
+        operator.setMinSize(200, 100);
         Label result = new Label();
+        result.setFont(new Font("Arial", 25));
+        result.setMinSize(200, 100);
 
         Map<String, BiFunction<Integer, Integer, Integer>> operations = new HashMap<>();
         operations.put("+", (x, y) -> x + y);

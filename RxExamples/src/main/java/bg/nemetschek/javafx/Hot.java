@@ -16,7 +16,9 @@ public final class Hot extends Application {
 
         VBox vBox = new VBox();
         Button button = new Button("Press Me");
+        button.setMinSize(200, 100);
         Button secondSubButton = new Button("Subscribe Subscriber 2");
+        secondSubButton.setMinSize(200, 100);
 
         Observable<ActionEvent> clicks =
             JavaFxObservable.actionEventsOf(button);

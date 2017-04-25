@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.observables.JavaFxObservable;
@@ -29,9 +30,12 @@ public final class Suggestions extends Application {
 
         //Declare a ListView with all U.S. states
         ListView<String> listView = new ListView<>();
+        listView.setMinSize(200, 500);
         List<String> states = Arrays.asList(getResponse("https://goo.gl/S0xuOi").split("\\r?\\n"));
 
         TextField inputBox = new TextField();
+        inputBox.setMinSize(200, 50);
+        inputBox.setFont(new Font("Arial", 20));
 
         Function<String, Observable<List<String>>> getStates = (String search) -> Observable.just(
             states.stream().filter(st -> st.toUpperCase().startsWith(search.toUpperCase())).collect(Collectors.toList())

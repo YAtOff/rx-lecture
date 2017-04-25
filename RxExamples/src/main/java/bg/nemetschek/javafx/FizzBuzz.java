@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rx.observables.JavaFxObservable;
 
@@ -15,8 +16,13 @@ public final class FizzBuzz  extends Application {
 
         VBox vBox = new VBox();
         Button button = new Button("Press Me");
+        button.setMinSize(200, 100);
         Label itemLabel = new Label("0");
+        itemLabel.setMinSize(200, 100);
+        itemLabel.setFont(new Font("Arial", 25));
         Label doneLabel = new Label("");
+        doneLabel.setMinSize(200, 100);
+        doneLabel.setFont(new Font("Arial", 25));
 
         JavaFxObservable.actionEventsOf(button)
                 .scan(1, (x, y) -> x + 1)

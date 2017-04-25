@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.observables.JavaFxObservable;
@@ -18,8 +19,14 @@ public final class Calc extends Application {
         VBox root = new VBox();
 
         Label label = new Label("Input Number");
+        label.setFont(new Font("Arial", 25));
+        label.setMinSize(200, 100);
         TextField input = new TextField();
+        input.setFont(new Font("Arial", 25));
+        input.setMinSize(200, 100);
         Label totalLabel = new Label();
+        totalLabel.setFont(new Font("Arial", 25));
+        totalLabel.setMinSize(200, 100);
 
         Button button = new Button("Add to Total");
 
