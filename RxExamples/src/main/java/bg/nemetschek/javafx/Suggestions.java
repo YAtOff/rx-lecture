@@ -41,15 +41,16 @@ public final class Suggestions extends Application {
         Observable<String> typedWords = JavaFxObservable.valuesOf(inputBox.textProperty())
             .publish().refCount();
 
-        //immediately jump to state being typed
-        typedWords.debounce(1000, TimeUnit.MILLISECONDS).startWith("")
-            .switchMap(s ->
-                typedWords
-                    .filter(w -> w.length() > 2)
-                    .switchMap(input ->
-                        getStates.apply(input)
-                        .observeOn(JavaFxScheduler.getInstance())
-                    )
+        typedWords
+            .doOnNext(word -> System.out.println("w..."))
+            .debounce(1000, TimeUnit.MILLISECONDS).startWith("")
+            .doOnNext(word -> System.out.println(".d.."))
+            .filter(word -> word.length() > 2)
+            .doOnNext(word -> System.out.println("..f."))
+            .switchMap(word ->
+                getStates.apply(word)
+                    .doOnNext(w -> System.out.println("...r"))
+                    .observeOn(JavaFxScheduler.getInstance())
             ).observeOn(JavaFxScheduler.getInstance())
             .subscribe(matching -> listView.getItems().setAll(matching));
 

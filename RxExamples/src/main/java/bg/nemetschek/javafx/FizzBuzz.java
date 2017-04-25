@@ -19,14 +19,12 @@ public final class FizzBuzz  extends Application {
         Label doneLabel = new Label("");
 
         JavaFxObservable.actionEventsOf(button)
-                .map(ae -> 1)
-                .scan(1, (x, y) -> x + y)
+                .scan(1, (x, y) -> x + 1)
                 .map(this::fizzBuzz)
-                .doOnNext(System.out::println)
                 .takeUntil(val -> val.equals("FizzBuzz"))
                 .subscribe(
                     itemLabel::setText,
-                    e -> e.printStackTrace(),
+                    Throwable::printStackTrace,
                     () -> doneLabel.setText("Done!")
                 );
 

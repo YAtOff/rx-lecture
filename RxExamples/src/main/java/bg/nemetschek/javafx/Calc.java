@@ -15,7 +15,6 @@ public final class Calc extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
         VBox root = new VBox();
 
         Label label = new Label("Input Number");

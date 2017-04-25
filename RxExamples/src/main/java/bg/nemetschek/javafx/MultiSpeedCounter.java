@@ -27,21 +27,21 @@ public class MultiSpeedCounter extends Application {
         Function<Long, Long> incCounter = acc -> acc + 1;
         Function<Long, Long> resetCounter = acc -> initial;
 
-        Observable<ActionEvent> start = JavaFxObservable.actionEventsOf(startButton);
-        Observable<ActionEvent> half = JavaFxObservable.actionEventsOf(halfButton);
-        Observable<ActionEvent> stop = JavaFxObservable.actionEventsOf(stopButton);
-        Observable<ActionEvent> reset = JavaFxObservable.actionEventsOf(resetButton);
+        Observable<ActionEvent> startClicks = JavaFxObservable.actionEventsOf(startButton);
+        Observable<ActionEvent> halfClicks = JavaFxObservable.actionEventsOf(halfButton);
+        Observable<ActionEvent> stopClicks = JavaFxObservable.actionEventsOf(stopButton);
+        Observable<ActionEvent> resetClicks = JavaFxObservable.actionEventsOf(resetButton);
 
-        Function<Long, Observable<Long>> interval = time -> Observable.interval(time, TimeUnit.SECONDS)
-                .takeUntil(stop);
+        Function<Long, Observable<Long>> interval = time -> Observable.interval(time, TimeUnit.MILLISECONDS)
+                .takeUntil(stopClicks);
         Function<Long, Observable<Function<Long, Long>>> incOrReset = (time) -> Observable.merge(
                 interval.apply(time).map(event -> incCounter),
-                reset.map(event -> resetCounter)
+                resetClicks.map(event -> resetCounter)
         );
 
         Observable.merge(
-                start.map(event -> 2L),
-                half.map(event -> 1L)
+                startClicks.map(event -> 1000L),
+                halfClicks.map(event -> 500L)
         )
             .switchMap(time -> incOrReset.apply(time))
                 .scan(initial, (acc, action) -> action.apply(acc))
