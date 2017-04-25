@@ -24,20 +24,25 @@ public class Async {
         service.getTeams().enqueue(new Callback<List<Team>>() {
             @Override
             public void onResponse(Call<List<Team>> call, Response<List<Team>> response) {
+                // get teams
                 try {
+                    // find team
                     String teamCode = Utils.findTeam(response.body(), teamName).getCode();
                     service.getTeam(teamCode).enqueue(new Callback<Team>() {
                         @Override
                         public void onResponse(Call<Team> call, Response<Team> response) {
+                            // get team
                             Team team = response.body();
                             int playersCount = team.getPlayers().size();
                             for (String playerCode : team.getPlayers()) {
+                                // get players
                                 service.getPlayer(teamCode, playerCode).enqueue(new Callback<Player>() {
                                     @Override
                                     public void onResponse(Call<Player> call, Response<Player> response) {
                                         players.add(response.body());
                                         if (players.size() == playersCount) {
                                             try {
+                                                // find top player
                                                 Player top = Utils.topPlayer(players);
                                                 System.out.println(String.format("Player with max points is %s with %2.1f PTS",
                                                         top.getName(), top.getStats().getPoints()));

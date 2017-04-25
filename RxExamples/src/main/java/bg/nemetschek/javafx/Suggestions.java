@@ -40,6 +40,7 @@ public final class Suggestions extends Application {
         Function<String, Observable<List<String>>> getStates = (String search) -> Observable.just(
             states.stream().filter(st -> st.toUpperCase().startsWith(search.toUpperCase())).collect(Collectors.toList())
         )
+            .doOnNext(w -> System.out.println("...r"))
             .delay(500, TimeUnit.MILLISECONDS, Schedulers.io());
 
         Observable<String> typedWords = JavaFxObservable.valuesOf(inputBox.textProperty())
@@ -51,11 +52,8 @@ public final class Suggestions extends Application {
             .doOnNext(word -> System.out.println(".d.."))
             .filter(word -> word.length() > 2)
             .doOnNext(word -> System.out.println("..f."))
-            .switchMap(word ->
-                getStates.apply(word)
-                    .doOnNext(w -> System.out.println("...r"))
-                    .observeOn(JavaFxScheduler.getInstance())
-            ).observeOn(JavaFxScheduler.getInstance())
+            .switchMap(word -> getStates.apply(word))
+            .observeOn(JavaFxScheduler.getInstance())
             .subscribe(matching -> listView.getItems().setAll(matching));
 
         root.getChildren().addAll(inputBox, listView);

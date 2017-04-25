@@ -22,6 +22,13 @@ public class Promise <T> {
         callback.accept(result);
     }
 
+    <U> Promise<U> thenApply(Function<T, U> transformer) {
+        return null;
+        // executes next when current promise is resolved
+        // creates new promise that holds the result with transformer applied to in
+    }
+
+
     <U> Promise<U> thenCompose(Function<T, Promise<U>> next) {
         return null;
         // executes next when current promise is resolved

@@ -23,9 +23,7 @@ public class AsyncRx {
         long startTime = System.currentTimeMillis();
         service.getTeams()
                 .flatMap(teams -> Observable.from(
-                        teams.stream()
-                                .filter(t -> t.getName().equals(teamName))
-                                .limit(1)
+                        Utils.findTeam(teams.stream(), teamName)
                                 .collect(Collectors.toList()))
                 )
                 .flatMap(team -> service.getTeam(team.getCode()))

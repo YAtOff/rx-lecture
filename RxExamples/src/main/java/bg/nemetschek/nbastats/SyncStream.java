@@ -17,9 +17,9 @@ public class SyncStream {
 
         try {
             long startTime = System.currentTimeMillis();
-            Player top = service.getTeams().execute().body().stream()
-                    .filter(t -> t.getName().equals(teamName))
-                    .limit(1)
+            // get teams and find team
+            Player top = Utils.findTeam(service.getTeams().execute().body().stream(), teamName)
+                    // get team
                     .flatMap(team -> {
                         try {
                             return Stream.of(service.getTeam(team.getCode()).execute().body());
@@ -27,6 +27,7 @@ public class SyncStream {
                             return Stream.empty();
                         }
                     })
+                    // get players
                     .flatMap(team ->
                             team.getPlayers().stream()
                                 .map(playerCode -> {
@@ -37,6 +38,7 @@ public class SyncStream {
                                     }
                                 })
                     )
+                    // find top player
                     .max(Comparator.comparing(player -> ((Player) player).getStats().getPoints()))
                     .map(o -> (Player) o)
                     .orElseThrow(() -> new Exception("No players in team"));

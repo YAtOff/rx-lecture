@@ -17,14 +17,19 @@ public class Sync {
 
         try {
             long startTime = System.currentTimeMillis();
+            // get teams
             List<Team> teams = service.getTeams().execute().body();
+            // find team
             String teamCode = Utils.findTeam(teams, teamName).getCode();
+            // get team
             Team team = service.getTeam(teamCode).execute().body();
+            // get players
             List<Player> players = new ArrayList<>(team.getPlayers().size());
             for (String playerCode : team.getPlayers()) {
                 Player player = service.getPlayer(teamCode, playerCode).execute().body();
                 players.add(player);
             }
+            // find top player
             Player top = Utils.topPlayer(players);
             System.out.println(String.format("Player with max points is %s with %2.1f PTS",
                     top.getName(), top.getStats().getPoints()));

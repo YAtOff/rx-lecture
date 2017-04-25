@@ -19,15 +19,19 @@ public class AsyncFuture {
         NBAServiceFeature service = retrofit.create(NBAServiceFeature.class);
 
         long startTime = System.currentTimeMillis();
+        // get teams
         service.getTeams()
                 .thenCompose(teams -> {
                     try {
+                        // find team
                         String teamCode = Utils.findTeam(teams, teamName).getCode();
+                        // get team
                         return service.getTeam(teamCode);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
+                // get players
                 .thenCompose(team -> {
                     List<CompletableFuture<Player>> futures = team.getPlayers().stream()
                             .map(code -> service.getPlayer(team.getCode(), code))
@@ -38,12 +42,14 @@ public class AsyncFuture {
                                         try {
                                             return f.get();
                                         } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
-                                            throw new RuntimeException(e);
+                                            // should not happen
+                                            return null;
                                         }
                                     })
                                     .collect(Collectors.toList())
                             );
                 })
+                // find top player
                 .thenAccept(players -> {
                     try {
                         Player top = Utils.topPlayer(players);
@@ -60,4 +66,5 @@ public class AsyncFuture {
                     return null;
                 });
     }
+
 }

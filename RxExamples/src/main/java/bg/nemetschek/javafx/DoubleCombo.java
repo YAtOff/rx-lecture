@@ -28,8 +28,7 @@ public final class DoubleCombo extends Application {
         Observable<String> latest = Observable.combineLatest(letterSelections, numberSelections, (l, n) -> l + "-" + n);
         Observable<String> zip = Observable.zip(letterSelections, numberSelections, (l, n) -> l + "-" + n);
 
-        //zip
-        latest
+        zip
             .subscribe(
                 System.out::println,
                 Throwable::printStackTrace,
