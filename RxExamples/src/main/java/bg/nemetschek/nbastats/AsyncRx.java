@@ -8,7 +8,9 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 
 import rx.Observable;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AsyncRx {
     public static void main(String[] args) {
@@ -20,30 +22,24 @@ public class AsyncRx {
 
         long startTime = System.currentTimeMillis();
         service.getTeams()
-                .flatMap(teams -> {
-                    try {
-                        String teamCode = Utils.findTeam(teams, teamName).getCode();
-                        return service.getTeam(teamCode);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .flatMap(teams -> Observable.from(
+                        teams.stream()
+                                .filter(t -> t.getName().equals(teamName))
+                                .limit(1)
+                                .collect(Collectors.toList()))
+                )
+                .flatMap(team -> service.getTeam(team.getCode()))
                 .flatMap(team -> Observable.from(team.getPlayers())
                         .flatMap(code -> service.getPlayer(team.getCode(), code)))
-                .reduce(new ArrayList<Player>(), (acc, player) -> {
-                    acc.add(player);
-                    return acc;
-                })
+                .reduce((top, player) -> Stream.of(top, player)
+                        .max(Comparator.comparing(p -> p.getStats().getPoints()))
+                        .get()
+                )
                 .subscribe(
-                        players -> {
-                            try {
-                                Player top = Utils.topPlayer(players);
-                                System.out.println(String.format("Player with max points is %s with %2.1f PTS",
-                                        top.getName(), top.getStats().getPoints()));
-                                System.out.println(String.format("Time: %d", System.currentTimeMillis() - startTime));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                        top -> {
+                            System.out.println(String.format("Player with max points is %s with %2.1f PTS",
+                                    top.getName(), top.getStats().getPoints()));
+                            System.out.println(String.format("Time: %d", System.currentTimeMillis() - startTime));
                         },
                         Throwable::printStackTrace
                 );
