@@ -40,19 +40,17 @@ public final class Suggestions extends Application {
         Function<String, Observable<List<String>>> getStates = (String search) -> Observable.just(
             states.stream().filter(st -> st.toUpperCase().startsWith(search.toUpperCase())).collect(Collectors.toList())
         )
-            .doOnNext(w -> System.out.println("...r"))
-            .delay(500, TimeUnit.MILLISECONDS, Schedulers.io());
+            .doOnNext(w -> System.out.println("...req " + search))
+            .delay(3000, TimeUnit.MILLISECONDS, Schedulers.io())
+            .doOnNext(w -> System.out.println("...res " + search));
 
-        Observable<String> typedWords = JavaFxObservable.valuesOf(inputBox.textProperty())
-            .publish().refCount();
-
-        typedWords
+        JavaFxObservable.valuesOf(inputBox.textProperty())
             .doOnNext(word -> System.out.println("w..."))
-            .debounce(1000, TimeUnit.MILLISECONDS).startWith("")
+            .debounce(500, TimeUnit.MILLISECONDS).startWith("")
             .doOnNext(word -> System.out.println(".d.."))
             .filter(word -> word.length() > 2)
             .doOnNext(word -> System.out.println("..f."))
-            .switchMap(word -> getStates.apply(word))
+            .switchMap(getStates::apply)
             .observeOn(JavaFxScheduler.getInstance())
             .subscribe(matching -> listView.getItems().setAll(matching));
 

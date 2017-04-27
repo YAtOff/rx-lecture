@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import rx.observables.JavaFxObservable;
 import rx.schedulers.JavaFxScheduler;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public final class TrippleClick extends Application {
@@ -27,7 +28,7 @@ public final class TrippleClick extends Application {
 
         JavaFxObservable.actionEventsOf(button)
                 .buffer(500, TimeUnit.MILLISECONDS)
-                .map(clicks -> clicks.size())
+                .map(List::size)
                 .filter(count -> count >= 3)
                 .observeOn(JavaFxScheduler.getInstance())
                 .subscribe(i -> label.setText("Clicked"));
